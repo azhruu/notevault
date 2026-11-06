@@ -10,6 +10,19 @@ ul#noteList{list-style:none;margin:6px 0 0;padding:0;overflow-y:auto}
 ul#noteList li{padding:9px 10px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;cursor:pointer}
 ul#noteList li.active{border-color:var(--accent)}
 ul#noteList li small{color:var(--muted);display:block;margin-top:2px}
+.tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.tag{display:inline-block;background:#0d1117;border:1px solid var(--border);border-radius:20px;padding:1px 8px;font-size:11.5px;color:var(--accent)}
+.tag.editable{display:inline-flex;align-items:center;gap:2px;padding:2px 4px 2px 9px}
+.tagx{background:none;border:none;color:var(--muted);cursor:pointer;font-size:11px;padding:0 2px}
+.tagx:hover{color:var(--red)}
+#tagFilter{display:flex;flex-wrap:wrap;gap:6px}
+.tagchip{background:#0d1117;border:1px solid var(--border);color:var(--muted);border-radius:20px;padding:3px 10px;font-size:12px;font-weight:400;cursor:pointer}
+.tagchip:hover{color:var(--text);border-color:var(--accent)}
+.tagchip.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.tagchip.clear{color:var(--red);border-color:var(--red)}
+.tagbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tagbar #tagChips{display:flex;gap:6px;flex-wrap:wrap}
+.tagbar input{width:190px;padding:7px 10px}
 main{flex:1;padding:18px;display:flex;flex-direction:column;gap:12px;min-width:0}
 .toolbar{display:flex;gap:10px}
 .toolbar input{flex:1;font-size:16px;font-weight:600}

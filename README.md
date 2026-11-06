@@ -10,6 +10,7 @@
 
 - ✍️ Split editor with **live markdown preview** (headings, bold, italic, code, lists, links)
 - 🔎 Instant full-text search across titles and bodies
+- 🏷️ Tags on notes with one-click tag filtering
 - 💾 Auto-save to `localStorage` on every keystroke
 - 🛡️ Safe rendering — HTML is escaped before formatting, no injection
 - 📱 Responsive layout

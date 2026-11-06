@@ -11,12 +11,17 @@
   <h1>🗒️ NoteVault</h1>
   <button id="newBtn">+ New note</button>
   <input id="search" placeholder="Search notes…">
+  <div id="tagFilter" hidden></div>
   <ul id="noteList"></ul>
 </aside>
 <main>
   <div class="toolbar">
     <input id="noteTitle" placeholder="Note title">
     <button id="delBtn" class="danger">Delete</button>
+  </div>
+  <div class="tagbar">
+    <span id="tagChips"></span>
+    <input id="tagInput" placeholder="Add tag… press Enter" maxlength="20">
   </div>
   <div class="panes">
     <textarea id="editor" placeholder="Write markdown here… # Heading, **bold**, - list item"></textarea>
