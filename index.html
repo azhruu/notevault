@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NoteVault — markdown notes</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<aside>
+  <h1>🗒️ NoteVault</h1>
+  <button id="newBtn">+ New note</button>
+  <input id="search" placeholder="Search notes…">
+  <ul id="noteList"></ul>
+</aside>
+<main>
+  <div class="toolbar">
+    <input id="noteTitle" placeholder="Note title">
+    <button id="delBtn" class="danger">Delete</button>
+  </div>
+  <div class="panes">
+    <textarea id="editor" placeholder="Write markdown here… # Heading, **bold**, - list item"></textarea>
+    <div id="preview" class="preview"></div>
+  </div>
+  <p class="hint">Markdown supported: # headings, **bold**, *italic*, `code`, - lists, [links](url). Auto-saves locally.</p>
+</main>
+<script src="app.js"></script>
+</body>
+</html>
