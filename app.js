@@ -159,8 +159,59 @@ function renderEditor() {
   $("noteTitle").value = n ? n.title : "";
   $("editor").value = n ? n.body : "";
   $("preview").innerHTML = renderMarkdown(n ? n.body : "");
-  $("noteTitle").disabled = $("editor").disabled = $("delBtn").disabled = !n;
+  $("noteTitle").disabled = $("editor").disabled = $("delBtn").disabled = $("exportBtn").disabled = !n;
   renderTags();
+}
+
+function slugify(text) {
+  return text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 50)
+    || "untitled-note";
+}
+
+/* The .md text for a note: title as an H1 unless the body already opens with it. */
+function noteMarkdown(n) {
+  const title = n.title.trim();
+  const body = n.body.replace(/^\s+/, "");
+  if (!title) return body;
+  if (body.split("\n")[0] === "# " + title) return body;
+  return "# " + title + (body ? "\n\n" + body : "\n");
+}
+
+function downloadText(filename, text) {
+  const blob = new Blob([text], { type: "text/markdown;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function exportActiveNote() {
+  const n = active();
+  if (!n) return;
+  downloadText(slugify(n.title) + ".md", noteMarkdown(n));
+}
+
+/*
+ * Turn one .md file's text into a note. The first "# ..." heading becomes
+ * the title (the rest is the body); without one, the filename is the title.
+ * Returns the new note.
+ */
+function importMarkdownText(text, filename) {
+  const lines = text.replace(/^\uFEFF/, "").split("\n");
+  let title = "";
+  let body = text;
+  const first = lines.findIndex((l) => l.trim() !== "");
+  if (first !== -1 && /^#\s+/.test(lines[first])) {
+    title = lines[first].replace(/^#\s+/, "").trim().slice(0, 80);
+    body = lines.slice(first + 1).join("\n").replace(/^\s+/, "");
+  } else {
+    title = (filename || "").replace(/\.(md|markdown)$/i, "").replace(/[-_]+/g, " ").trim().slice(0, 80);
+  }
+  const n = { id: Date.now() + Math.floor(Math.random() * 1000), title, body, tags: [], updated: Date.now() };
+  notes.unshift(n);
+  return n;
 }
 
 function renderAll() { renderTagFilter(); renderList(); renderEditor(); }
@@ -181,6 +232,27 @@ $("newBtn").addEventListener("click", () => {
   const n = { id: Date.now(), title: "", body: "", tags: [], updated: Date.now() };
   notes.unshift(n); activeId = n.id; save(); renderAll();
   $("noteTitle").focus();
+});
+$("exportBtn").addEventListener("click", exportActiveNote);
+$("importBtn").addEventListener("click", () => $("importFile").click());
+$("importFile").addEventListener("change", () => {
+  const files = [...$("importFile").files];
+  if (!files.length) return;
+  let firstNew = null;
+  let pending = files.length;
+  for (const file of files) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const n = importMarkdownText(String(reader.result || ""), file.name);
+      if (!firstNew) firstNew = n;
+      if (--pending === 0) {
+        activeId = firstNew.id;
+        save(); renderAll();
+      }
+    };
+    reader.readAsText(file);
+  }
+  $("importFile").value = ""; // allow re-importing the same file later
 });
 $("delBtn").addEventListener("click", () => {
   if (!activeId) return;
