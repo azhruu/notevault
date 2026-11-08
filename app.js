@@ -16,6 +16,7 @@ function load() {
     if (!Array.isArray(n.tags)) n.tags = [];
     n.tags = [...new Set(n.tags.filter((t) => typeof t === "string")
       .map((t) => t.trim().toLowerCase()).filter(Boolean).slice(0, 10))];
+    n.pinned = n.pinned === true; // notes gained a pin flag; older saves lack it
   }
   return parsed;
 }
@@ -85,13 +86,18 @@ function renderList() {
   const q = $("search").value.trim().toLowerCase();
   const ul = $("noteList");
   ul.innerHTML = "";
-  for (const n of notes) {
+  /* Pinned notes always sit at the top, then most recently updated first. */
+  const ordered = [...notes].sort((a, b) => (b.pinned - a.pinned) || (b.updated - a.updated));
+  for (const n of ordered) {
     if (q && !(n.title + " " + n.body).toLowerCase().includes(q)) continue;
     if (activeTag && !n.tags.includes(activeTag)) continue;
     const li = document.createElement("li");
-    if (n.id === activeId) li.className = "active";
+    const cls = [];
+    if (n.id === activeId) cls.push("active");
+    if (n.pinned) cls.push("pinned");
+    li.className = cls.join(" ");
     const strong = document.createElement("strong");
-    strong.textContent = n.title || "Untitled";
+    strong.textContent = (n.pinned ? "📌 " : "") + (n.title || "Untitled");
     const small = document.createElement("small");
     small.textContent = new Date(n.updated).toLocaleString();
     li.append(strong, small);
@@ -160,7 +166,17 @@ function renderEditor() {
   $("editor").value = n ? n.body : "";
   $("preview").innerHTML = renderMarkdown(n ? n.body : "");
   $("noteTitle").disabled = $("editor").disabled = $("delBtn").disabled = $("exportBtn").disabled = !n;
+  $("pinBtn").disabled = !n;
+  $("pinBtn").textContent = n && n.pinned ? "📌 Pinned" : "📌 Pin";
+  $("pinBtn").classList.toggle("on", !!(n && n.pinned));
   renderTags();
+}
+
+function togglePin() {
+  const n = active();
+  if (!n) return;
+  n.pinned = !n.pinned;
+  save(); renderAll();
 }
 
 function slugify(text) {
@@ -209,7 +225,7 @@ function importMarkdownText(text, filename) {
   } else {
     title = (filename || "").replace(/\.(md|markdown)$/i, "").replace(/[-_]+/g, " ").trim().slice(0, 80);
   }
-  const n = { id: Date.now() + Math.floor(Math.random() * 1000), title, body, tags: [], updated: Date.now() };
+  const n = { id: Date.now() + Math.floor(Math.random() * 1000), title, body, tags: [], pinned: false, updated: Date.now() };
   notes.unshift(n);
   return n;
 }
@@ -229,10 +245,11 @@ function touch() {
 }
 
 $("newBtn").addEventListener("click", () => {
-  const n = { id: Date.now(), title: "", body: "", tags: [], updated: Date.now() };
+  const n = { id: Date.now(), title: "", body: "", tags: [], pinned: false, updated: Date.now() };
   notes.unshift(n); activeId = n.id; save(); renderAll();
   $("noteTitle").focus();
 });
+$("pinBtn").addEventListener("click", togglePin);
 $("exportBtn").addEventListener("click", exportActiveNote);
 $("importBtn").addEventListener("click", () => $("importFile").click());
 $("importFile").addEventListener("change", () => {
@@ -272,7 +289,7 @@ $("tagInput").addEventListener("keydown", (e) => {
 });
 
 if (!notes.length) {
-  notes = [{ id: Date.now(), title: "Welcome", tags: ["welcome"], updated: Date.now(),
+  notes = [{ id: Date.now(), title: "Welcome", tags: ["welcome"], pinned: false, updated: Date.now(),
     body: "# Welcome to NoteVault\n\nWrite **markdown** on the left, see it *live* on the right.\n\n- Create notes\n- Search instantly\n- Tag notes and filter by tag\n- Everything stays in your browser" }];
   activeId = notes[0].id; save();
 }

@@ -9,6 +9,7 @@
 ## Features
 
 - ✍️ Split editor with **live markdown preview** (headings, bold, italic, code, lists, links)
+- 📌 Pin notes — pin important notes to the top of the list (📌 button in the toolbar, gold border in the list)
 - 🔎 Instant full-text search across titles and bodies
 - 🏷️ Tags on notes with one-click tag filtering
 - 📤 Export the open note as a `.md` file, and import `.md` files as new notes (first `#` heading becomes the title)
@@ -26,7 +27,7 @@ python3 -m http.server 8000   # http://localhost:8000
 
 ## Roadmap
 
-Word count → pinned notes. Full plan: [ROADMAP.md](ROADMAP.md).
+Word count → code highlighting. Full plan: [ROADMAP.md](ROADMAP.md).
 
 ## License
 
