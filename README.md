@@ -9,6 +9,7 @@
 ## Features
 
 - ✍️ Split editor with **live markdown preview** (headings, bold, italic, code, lists, links)
+- 🔢 Word & character count — live word, character and line count for the open note in the editor footer
 - 📌 Pin notes — pin important notes to the top of the list (📌 button in the toolbar, gold border in the list)
 - 🔎 Instant full-text search across titles and bodies
 - 🏷️ Tags on notes with one-click tag filtering

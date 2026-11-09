@@ -6,7 +6,7 @@ Each item lands as one complete, tested change.
 - [x] Tags for notes with tag filtering
 - [x] Export a note as a .md file (and import .md files)
 - [x] Pin important notes to the top
-- [ ] Word/character count in the editor footer
+- [x] Word/character count in the editor footer
 - [ ] Code blocks with syntax coloring in preview
 - [ ] Sort options (updated / created / A–Z)
 - [ ] Dark/light theme toggle

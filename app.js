@@ -170,6 +170,20 @@ function renderEditor() {
   $("pinBtn").textContent = n && n.pinned ? "📌 Pinned" : "📌 Pin";
   $("pinBtn").classList.toggle("on", !!(n && n.pinned));
   renderTags();
+  renderCounts();
+}
+
+/* Live word / character / line count for the open note, shown in the footer. */
+function countWords(text) {
+  const t = text.trim();
+  return t ? t.split(/\s+/).length : 0;
+}
+function renderCounts() {
+  const n = active();
+  if (!n) { $("counts").textContent = "No note open"; return; }
+  const body = n.body;
+  const lines = body ? body.split("\n").length : 0;
+  $("counts").textContent = countWords(body) + " words · " + body.length + " characters · " + lines + " lines";
 }
 
 function togglePin() {
@@ -241,6 +255,7 @@ function touch() {
   notes.sort((a, b) => b.updated - a.updated);
   save();
   $("preview").innerHTML = renderMarkdown(n.body);
+  renderCounts();
   renderList();
 }
 
