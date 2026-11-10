@@ -32,6 +32,13 @@ main{flex:1;padding:18px;display:flex;flex-direction:column;gap:12px;min-width:0
 textarea{resize:none;line-height:1.55}
 .preview{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:6px 16px;overflow-y:auto;line-height:1.6}
 .preview code{background:#0d1117;padding:1px 6px;border-radius:5px;border:1px solid var(--border)}
+.preview pre{background:#0d1117;border:1px solid var(--border);border-radius:8px;padding:12px 14px;overflow-x:auto;margin:10px 0}
+.preview pre code{background:none;border:none;padding:0;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;line-height:1.55}
+.preview pre code .tok-kw{color:#ff7b72}
+.preview pre code .tok-str{color:#a5d6ff}
+.preview pre code .tok-num{color:#79c0ff}
+.preview pre code .tok-com{color:#8b949e;font-style:italic}
+.preview pre code .tok-fn{color:#d2a8ff}
 .preview a{color:var(--accent)}
 .hint{color:var(--muted);font-size:12.5px;margin:0}
 .counts{color:var(--muted);font-size:12.5px}

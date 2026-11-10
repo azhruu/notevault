@@ -31,8 +31,21 @@ function renderMarkdown(src) {
     .replace(/\*([^*]+)\*/g, "<em>$1</em>")
     .replace(/`([^`]+)`/g, "<code>$1</code>")
     .replace(/\[([^\]]+)\]\((https?:[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
-  let html = "", inList = false;
+  let html = "", inList = false, inCode = false, codeLang = "", codeBuf = [];
   for (const line of esc.split("\n")) {
+    /* Fenced code block: ```lang opens, ``` closes; inside, text stays raw. */
+    const fence = /^```(\S*)\s*$/.exec(line);
+    if (fence) {
+      if (inCode) {
+        html += codeBlockHtml(codeBuf.join("\n"), codeLang);
+        inCode = false; codeBuf = [];
+      } else {
+        if (inList) { html += "</ul>"; inList = false; }
+        inCode = true; codeLang = fence[1] || "";
+      }
+      continue;
+    }
+    if (inCode) { codeBuf.push(line); continue; }
     if (/^\s*-\s+/.test(line)) {
       if (!inList) { html += "<ul>"; inList = true; }
       html += "<li>" + inline(line.replace(/^\s*-\s+/, "")) + "</li>";
@@ -45,7 +58,41 @@ function renderMarkdown(src) {
     else if (line.trim()) html += "<p>" + inline(line) + "</p>";
   }
   if (inList) html += "</ul>";
+  if (inCode) html += codeBlockHtml(codeBuf.join("\n"), codeLang); // unclosed fence still renders as code
   return html || '<p style="color:#8b949e">Preview appears here…</p>';
+}
+
+/*
+ * Tiny syntax highlighter for fenced code blocks: keywords, strings,
+ * numbers, comments and function names, in the GitHub-dark palette.
+ * It runs on already-escaped text, so it can never inject markup.
+ * `#` comments are only treated as comments for languages that use
+ * them (Python, shell, …) — CSS `#id` selectors stay code.
+ */
+const CODE_KEYWORDS = new Set(("const let var function return if elif else for while do switch case break continue new class extends implements super this self typeof instanceof in of try catch except finally throw throws import from export default async await def lambda with as pass global nonlocal assert del yield print public private protected static final void int long short byte float double boolean char enum struct typedef namespace using true false null undefined True False None and or not is").split(" "));
+const HASH_COMMENT_LANGS = new Set(["py", "python", "rb", "ruby", "sh", "bash", "zsh", "shell", "yml", "yaml", "toml", "r", "pl", "perl"]);
+const NO_HASH_LANGS = new Set(["js", "javascript", "ts", "typescript", "java", "c", "h", "cpp", "c++", "cs", "csharp", "go", "rust", "rs", "php", "swift", "kotlin", "kt", "scala", "css", "html", "xml", "svg"]);
+/* groups: 1 comment, 2 string, 3 number, 4 function name, 5 plain word */
+const TOKEN_RE_HASH = /(\/\/[^\n]*|\/\*[\s\S]*?\*\/|<!--[\s\S]*?-->|#[^\n]*)|("(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*'|`(?:[^`\\\n]|\\.)*`)|\b(\d+(?:\.\d+)?)\b|\b([A-Za-z_$][\w$]*)(?=\s*\()|\b([A-Za-z_$][\w$]*)\b/g;
+const TOKEN_RE_NOHASH = /(\/\/[^\n]*|\/\*[\s\S]*?\*\/|<!--[\s\S]*?-->)|("(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*'|`(?:[^`\\\n]|\\.)*`)|\b(\d+(?:\.\d+)?)\b|\b([A-Za-z_$][\w$]*)(?=\s*\()|\b([A-Za-z_$][\w$]*)\b/g;
+
+function highlightCode(code, lang) {
+  const l = (lang || "").toLowerCase();
+  const re = (HASH_COMMENT_LANGS.has(l) || !NO_HASH_LANGS.has(l)) ? TOKEN_RE_HASH : TOKEN_RE_NOHASH;
+  return code.replace(re, (m, com, str, num, fn, word) => {
+    if (com) return '<span class="tok-com">' + com + "</span>";
+    if (str) return '<span class="tok-str">' + str + "</span>";
+    if (num) return '<span class="tok-num">' + num + "</span>";
+    if (fn) return '<span class="' + (CODE_KEYWORDS.has(fn) ? "tok-kw" : "tok-fn") + '">' + fn + "</span>";
+    if (word) return CODE_KEYWORDS.has(word) ? '<span class="tok-kw">' + word + "</span>" : word;
+    return m;
+  });
+}
+
+function codeBlockHtml(code, lang) {
+  const safeLang = (lang || "").replace(/[^a-z0-9-]/gi, "");
+  const cls = safeLang ? ' class="language-' + safeLang + '"' : "";
+  return "<pre><code" + cls + ">" + highlightCode(code, lang) + "</code></pre>";
 }
 
 function allTags() {
