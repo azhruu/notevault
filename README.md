@@ -10,6 +10,7 @@
 
 - ✍️ Split editor with **live markdown preview** (headings, bold, italic, inline code, fenced code blocks with syntax highlighting, lists, links)
 - 🔢 Word & character count — live word, character and line count for the open note in the editor footer
+- ↕️ Sort options — order the list by recently updated, recently created, or title A–Z (pinned notes always stay on top); your choice is remembered
 - 📌 Pin notes — pin important notes to the top of the list (📌 button in the toolbar, gold border in the list)
 - 🔎 Instant full-text search across titles and bodies
 - 🏷️ Tags on notes with one-click tag filtering
@@ -28,7 +29,7 @@ python3 -m http.server 8000   # http://localhost:8000
 
 ## Roadmap
 
-Code highlighting → sort options. Full plan: [ROADMAP.md](ROADMAP.md).
+Sort options → dark/light theme toggle. Full plan: [ROADMAP.md](ROADMAP.md).
 
 ## License
 

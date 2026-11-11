@@ -8,6 +8,8 @@ button{background:var(--accent);border-color:var(--accent);color:#fff;font-weigh
 button.danger{background:none;border-color:var(--red);color:var(--red)}
 #pinBtn.on{background:#d29922;border-color:#d29922}
 ul#noteList{list-style:none;margin:6px 0 0;padding:0;overflow-y:auto}
+.sortrow{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13px}
+.sortrow select{flex:1;min-width:0}
 ul#noteList li{padding:9px 10px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;cursor:pointer}
 ul#noteList li.active{border-color:var(--accent)}
 ul#noteList li.pinned{border-color:#d29922}

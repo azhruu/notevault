@@ -11,6 +11,13 @@
   <h1>🗒️ NoteVault</h1>
   <button id="newBtn">+ New note</button>
   <input id="search" placeholder="Search notes…">
+  <label class="sortrow">Sort
+    <select id="sortSelect" aria-label="Sort notes">
+      <option value="updated">Recently updated</option>
+      <option value="created">Recently created</option>
+      <option value="az">Title A–Z</option>
+    </select>
+  </label>
   <div id="tagFilter" hidden></div>
   <ul id="noteList"></ul>
 </aside>

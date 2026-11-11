@@ -2,11 +2,32 @@
 "use strict";
 
 const KEY = "notevault-v1";
+const SORT_KEY = "notevault-sort-v1";
 const $ = (id) => document.getElementById(id);
 
 let notes = load();
 let activeId = notes.length ? notes[0].id : null;
 let activeTag = null; // tag filter for the note list, null = show all
+let sortMode = loadSortMode();
+
+/* Sort modes: pinned notes always stay on top, the mode orders the rest. */
+const SORTS = {
+  updated: { label: "Recently updated", cmp: (a, b) => b.updated - a.updated },
+  created: { label: "Recently created", cmp: (a, b) => b.created - a.created },
+  az: { label: "Title A–Z", cmp: (a, b) => titleOf(a).localeCompare(titleOf(b), undefined, { sensitivity: "base" }) },
+};
+function titleOf(n) { return (n.title || "").trim() || "Untitled"; }
+function loadSortMode() {
+  try {
+    const m = localStorage.getItem(SORT_KEY);
+    if (SORTS[m]) return m;
+  } catch { /* fall through */ }
+  return "updated";
+}
+function sortNotes(list) {
+  const cmp = SORTS[sortMode].cmp;
+  return [...list].sort((a, b) => (b.pinned - a.pinned) || cmp(a, b));
+}
 
 function load() {
   let parsed;
@@ -17,6 +38,8 @@ function load() {
     n.tags = [...new Set(n.tags.filter((t) => typeof t === "string")
       .map((t) => t.trim().toLowerCase()).filter(Boolean).slice(0, 10))];
     n.pinned = n.pinned === true; // notes gained a pin flag; older saves lack it
+    /* Notes gained a created stamp; older saves fall back to their update time. */
+    n.created = typeof n.created === "number" ? n.created : n.updated;
   }
   return parsed;
 }
@@ -133,8 +156,8 @@ function renderList() {
   const q = $("search").value.trim().toLowerCase();
   const ul = $("noteList");
   ul.innerHTML = "";
-  /* Pinned notes always sit at the top, then most recently updated first. */
-  const ordered = [...notes].sort((a, b) => (b.pinned - a.pinned) || (b.updated - a.updated));
+  /* Pinned notes always sit at the top, then the chosen sort order. */
+  const ordered = sortNotes(notes);
   for (const n of ordered) {
     if (q && !(n.title + " " + n.body).toLowerCase().includes(q)) continue;
     if (activeTag && !n.tags.includes(activeTag)) continue;
@@ -286,7 +309,7 @@ function importMarkdownText(text, filename) {
   } else {
     title = (filename || "").replace(/\.(md|markdown)$/i, "").replace(/[-_]+/g, " ").trim().slice(0, 80);
   }
-  const n = { id: Date.now() + Math.floor(Math.random() * 1000), title, body, tags: [], pinned: false, updated: Date.now() };
+  const n = { id: Date.now() + Math.floor(Math.random() * 1000), title, body, tags: [], pinned: false, created: Date.now(), updated: Date.now() };
   notes.unshift(n);
   return n;
 }
@@ -307,7 +330,7 @@ function touch() {
 }
 
 $("newBtn").addEventListener("click", () => {
-  const n = { id: Date.now(), title: "", body: "", tags: [], pinned: false, updated: Date.now() };
+  const n = { id: Date.now(), title: "", body: "", tags: [], pinned: false, created: Date.now(), updated: Date.now() };
   notes.unshift(n); activeId = n.id; save(); renderAll();
   $("noteTitle").focus();
 });
@@ -342,6 +365,13 @@ $("delBtn").addEventListener("click", () => {
 $("noteTitle").addEventListener("input", touch);
 $("editor").addEventListener("input", touch);
 $("search").addEventListener("input", renderList);
+/* Sort picker: remembered across visits; re-renders the list on change. */
+$("sortSelect").value = sortMode;
+$("sortSelect").addEventListener("change", () => {
+  sortMode = SORTS[$("sortSelect").value] ? $("sortSelect").value : "updated";
+  try { localStorage.setItem(SORT_KEY, sortMode); } catch { /* private mode */ }
+  renderList();
+});
 $("tagInput").addEventListener("keydown", (e) => {
   if (e.key === "Enter" || e.key === ",") {
     e.preventDefault();
@@ -351,7 +381,7 @@ $("tagInput").addEventListener("keydown", (e) => {
 });
 
 if (!notes.length) {
-  notes = [{ id: Date.now(), title: "Welcome", tags: ["welcome"], pinned: false, updated: Date.now(),
+  notes = [{ id: Date.now(), title: "Welcome", tags: ["welcome"], pinned: false, created: Date.now(), updated: Date.now(),
     body: "# Welcome to NoteVault\n\nWrite **markdown** on the left, see it *live* on the right.\n\n- Create notes\n- Search instantly\n- Tag notes and filter by tag\n- Everything stays in your browser" }];
   activeId = notes[0].id; save();
 }

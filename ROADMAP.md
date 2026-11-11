@@ -8,7 +8,7 @@ Each item lands as one complete, tested change.
 - [x] Pin important notes to the top
 - [x] Word/character count in the editor footer
 - [x] Code blocks with syntax coloring in preview
-- [ ] Sort options (updated / created / A–Z)
+- [x] Sort options (updated / created / A–Z)
 - [ ] Dark/light theme toggle
 - [ ] Export all notes as a single .zip-free bundle (.json)
 - [ ] Trash bin with restore (soft delete)
