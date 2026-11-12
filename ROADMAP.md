@@ -9,6 +9,6 @@ Each item lands as one complete, tested change.
 - [x] Word/character count in the editor footer
 - [x] Code blocks with syntax coloring in preview
 - [x] Sort options (updated / created / A–Z)
-- [ ] Dark/light theme toggle
+- [x] Dark/light theme toggle
 - [ ] Export all notes as a single .zip-free bundle (.json)
 - [ ] Trash bin with restore (soft delete)

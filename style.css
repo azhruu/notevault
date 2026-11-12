@@ -1,9 +1,16 @@
-:root{--bg:#0d1117;--panel:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--accent:#58a6ff;--red:#f85149}
+:root{--bg:#0d1117;--panel:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--accent:#58a6ff;--red:#f85149;--surface:#0d1117;--codebg:#0d1117}
+/* Light theme: same variables, light values; toggled by a `light` class on <body>. */
+body.light{--bg:#f6f8fa;--panel:#ffffff;--border:#d0d7de;--text:#1f2328;--muted:#656d76;--accent:#0969da;--red:#cf222e;--surface:#ffffff;--codebg:#f6f8fa}
+body.light .preview pre code .tok-kw{color:#cf222e}
+body.light .preview pre code .tok-str{color:#0a3069}
+body.light .preview pre code .tok-num{color:#0550ae}
+body.light .preview pre code .tok-com{color:#6e7781}
+body.light .preview pre code .tok-fn{color:#8250df}
 *{box-sizing:border-box}
 body{margin:0;font-family:"Segoe UI",system-ui,Arial,sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh}
 aside{width:290px;flex-shrink:0;border-right:1px solid var(--border);background:var(--panel);padding:18px;display:flex;flex-direction:column;gap:10px}
 aside h1{font-size:21px;margin:0 0 4px}
-input,textarea,button{background:#0d1117;color:var(--text);border:1px solid var(--border);border-radius:8px;padding:9px 11px;font-size:14px;font-family:inherit}
+input,textarea,button{background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:9px 11px;font-size:14px;font-family:inherit}
 button{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700;cursor:pointer}
 button.danger{background:none;border-color:var(--red);color:var(--red)}
 #pinBtn.on{background:#d29922;border-color:#d29922}
@@ -15,12 +22,12 @@ ul#noteList li.active{border-color:var(--accent)}
 ul#noteList li.pinned{border-color:#d29922}
 ul#noteList li small{color:var(--muted);display:block;margin-top:2px}
 .tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
-.tag{display:inline-block;background:#0d1117;border:1px solid var(--border);border-radius:20px;padding:1px 8px;font-size:11.5px;color:var(--accent)}
+.tag{display:inline-block;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:1px 8px;font-size:11.5px;color:var(--accent)}
 .tag.editable{display:inline-flex;align-items:center;gap:2px;padding:2px 4px 2px 9px}
 .tagx{background:none;border:none;color:var(--muted);cursor:pointer;font-size:11px;padding:0 2px}
 .tagx:hover{color:var(--red)}
 #tagFilter{display:flex;flex-wrap:wrap;gap:6px}
-.tagchip{background:#0d1117;border:1px solid var(--border);color:var(--muted);border-radius:20px;padding:3px 10px;font-size:12px;font-weight:400;cursor:pointer}
+.tagchip{background:var(--surface);border:1px solid var(--border);color:var(--muted);border-radius:20px;padding:3px 10px;font-size:12px;font-weight:400;cursor:pointer}
 .tagchip:hover{color:var(--text);border-color:var(--accent)}
 .tagchip.on{background:var(--accent);border-color:var(--accent);color:#fff}
 .tagchip.clear{color:var(--red);border-color:var(--red)}
@@ -33,8 +40,8 @@ main{flex:1;padding:18px;display:flex;flex-direction:column;gap:12px;min-width:0
 .panes{display:grid;grid-template-columns:1fr 1fr;gap:12px;flex:1;min-height:380px}
 textarea{resize:none;line-height:1.55}
 .preview{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:6px 16px;overflow-y:auto;line-height:1.6}
-.preview code{background:#0d1117;padding:1px 6px;border-radius:5px;border:1px solid var(--border)}
-.preview pre{background:#0d1117;border:1px solid var(--border);border-radius:8px;padding:12px 14px;overflow-x:auto;margin:10px 0}
+.preview code{background:var(--codebg);padding:1px 6px;border-radius:5px;border:1px solid var(--border)}
+.preview pre{background:var(--codebg);border:1px solid var(--border);border-radius:8px;padding:12px 14px;overflow-x:auto;margin:10px 0}
 .preview pre code{background:none;border:none;padding:0;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;line-height:1.55}
 .preview pre code .tok-kw{color:#ff7b72}
 .preview pre code .tok-str{color:#a5d6ff}

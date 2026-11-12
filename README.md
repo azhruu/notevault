@@ -8,6 +8,7 @@
 
 ## Features
 
+- 🌓 Dark/light theme toggle — switch the whole UI (editor, preview, code blocks) between dark and light; your choice is remembered, otherwise it follows your OS setting
 - ✍️ Split editor with **live markdown preview** (headings, bold, italic, inline code, fenced code blocks with syntax highlighting, lists, links)
 - 🔢 Word & character count — live word, character and line count for the open note in the editor footer
 - ↕️ Sort options — order the list by recently updated, recently created, or title A–Z (pinned notes always stay on top); your choice is remembered
@@ -29,7 +30,7 @@ python3 -m http.server 8000   # http://localhost:8000
 
 ## Roadmap
 
-Sort options → dark/light theme toggle. Full plan: [ROADMAP.md](ROADMAP.md).
+Dark/light theme toggle → export all notes as a single .json bundle. Full plan: [ROADMAP.md](ROADMAP.md).
 
 ## License
 

@@ -3,12 +3,44 @@
 
 const KEY = "notevault-v1";
 const SORT_KEY = "notevault-sort-v1";
+const THEME_KEY = "notevault-theme-v1";
 const $ = (id) => document.getElementById(id);
 
 let notes = load();
 let activeId = notes.length ? notes[0].id : null;
 let activeTag = null; // tag filter for the note list, null = show all
 let sortMode = loadSortMode();
+const THEMES = ["dark", "light"];
+let theme = loadTheme();
+
+/*
+ * Theme: a saved choice wins; otherwise follow the OS preference
+ * (prefers-color-scheme); the default is the existing dark theme.
+ * The choice is a `light` class on <body>, so every color comes from
+ * the CSS variables and the whole UI — editor, preview, code blocks — flips.
+ */
+function loadTheme() {
+  try {
+    const saved = localStorage.getItem(THEME_KEY);
+    if (THEMES.includes(saved)) return saved;
+  } catch { /* fall through */ }
+  try {
+    if (window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches) return "light";
+  } catch { /* fall through */ }
+  return "dark";
+}
+function applyTheme() {
+  document.body.classList.toggle("light", theme === "light");
+  const btn = $("themeBtn");
+  btn.textContent = theme === "light" ? "🌙 Dark theme" : "☀️ Light theme";
+  btn.setAttribute("aria-pressed", String(theme === "light"));
+  btn.title = theme === "light" ? "Switch to dark theme" : "Switch to light theme";
+}
+function toggleTheme() {
+  theme = theme === "light" ? "dark" : "light";
+  try { localStorage.setItem(THEME_KEY, theme); } catch { /* private mode */ }
+  applyTheme();
+}
 
 /* Sort modes: pinned notes always stay on top, the mode orders the rest. */
 const SORTS = {
@@ -82,7 +114,7 @@ function renderMarkdown(src) {
   }
   if (inList) html += "</ul>";
   if (inCode) html += codeBlockHtml(codeBuf.join("\n"), codeLang); // unclosed fence still renders as code
-  return html || '<p style="color:#8b949e">Preview appears here…</p>';
+  return html || '<p style="color:var(--muted)">Preview appears here…</p>';
 }
 
 /*
@@ -334,6 +366,8 @@ $("newBtn").addEventListener("click", () => {
   notes.unshift(n); activeId = n.id; save(); renderAll();
   $("noteTitle").focus();
 });
+/* Theme toggle: flips dark/light and remembers the choice. */
+$("themeBtn").addEventListener("click", toggleTheme);
 $("pinBtn").addEventListener("click", togglePin);
 $("exportBtn").addEventListener("click", exportActiveNote);
 $("importBtn").addEventListener("click", () => $("importFile").click());
@@ -385,4 +419,5 @@ if (!notes.length) {
     body: "# Welcome to NoteVault\n\nWrite **markdown** on the left, see it *live* on the right.\n\n- Create notes\n- Search instantly\n- Tag notes and filter by tag\n- Everything stays in your browser" }];
   activeId = notes[0].id; save();
 }
+applyTheme();
 renderAll();
