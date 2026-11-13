@@ -27,6 +27,7 @@
     <input id="noteTitle" placeholder="Note title">
     <button id="pinBtn" title="Pin this note to the top of the list">📌 Pin</button>
     <button id="exportBtn" title="Download this note as a .md file">Export .md</button>
+    <button id="exportAllBtn" title="Download every note as one .json bundle">Export all (.json)</button>
     <button id="importBtn" title="Import .md files as new notes">Import .md</button>
     <input type="file" id="importFile" accept=".md,.markdown,text/markdown" multiple hidden>
     <button id="delBtn" class="danger">Delete</button>
@@ -40,7 +41,7 @@
     <div id="preview" class="preview"></div>
   </div>
   <footer id="counts" class="counts" aria-live="polite"></footer>
-  <p class="hint">Markdown supported: # headings, **bold**, *italic*, `code`, - lists, [links](url), and ```fenced code blocks``` with syntax highlighting. Auto-saves locally. Export downloads the open note as a .md file; Import adds .md files as new notes.</p>
+  <p class="hint">Markdown supported: # headings, **bold**, *italic*, `code`, - lists, [links](url), and ```fenced code blocks``` with syntax highlighting. Auto-saves locally. Export downloads the open note as a .md file; Export all downloads every note as one .json bundle; Import adds .md files as new notes.</p>
 </main>
 <script src="app.js"></script>
 </body>

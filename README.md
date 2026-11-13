@@ -16,6 +16,7 @@
 - 🔎 Instant full-text search across titles and bodies
 - 🏷️ Tags on notes with one-click tag filtering
 - 📤 Export the open note as a `.md` file, and import `.md` files as new notes (first `#` heading becomes the title)
+- 📦 Export all notes — download the whole vault as one `.json` bundle (every note with its tags, pin and timestamps) for backup or moving browsers
 - 💾 Auto-save to `localStorage` on every keystroke
 - 🛡️ Safe rendering — HTML is escaped before formatting, no injection
 - 📱 Responsive layout
@@ -30,7 +31,7 @@ python3 -m http.server 8000   # http://localhost:8000
 
 ## Roadmap
 
-Dark/light theme toggle → export all notes as a single .json bundle. Full plan: [ROADMAP.md](ROADMAP.md).
+Export all notes as a single .json bundle → trash bin with restore. Full plan: [ROADMAP.md](ROADMAP.md).
 
 ## License
 

@@ -309,8 +309,8 @@ function noteMarkdown(n) {
   return "# " + title + (body ? "\n\n" + body : "\n");
 }
 
-function downloadText(filename, text) {
-  const blob = new Blob([text], { type: "text/markdown;charset=utf-8" });
+function downloadFile(filename, text, type) {
+  const blob = new Blob([text], { type });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
@@ -319,10 +319,27 @@ function downloadText(filename, text) {
   URL.revokeObjectURL(url);
 }
 
+function downloadText(filename, text) {
+  downloadFile(filename, text, "text/markdown;charset=utf-8");
+}
+
 function exportActiveNote() {
   const n = active();
   if (!n) return;
   downloadText(slugify(n.title) + ".md", noteMarkdown(n));
+}
+
+/*
+ * Export all notes: the whole vault travels as one .json bundle
+ * { app, version, exportedAt, count, notes } so it can be backed up or
+ * moved to another browser in a single file. Each note keeps its id,
+ * title, body, tags, pin and timestamps.
+ */
+function serializeVault() {
+  return JSON.stringify({ app: "notevault", version: 1, exportedAt: new Date().toISOString(), count: notes.length, notes }, null, 2);
+}
+function exportAllNotes() {
+  downloadFile("notevault-all-notes-" + new Date().toISOString().slice(0, 10) + ".json", serializeVault(), "application/json;charset=utf-8");
 }
 
 /*
@@ -370,6 +387,7 @@ $("newBtn").addEventListener("click", () => {
 $("themeBtn").addEventListener("click", toggleTheme);
 $("pinBtn").addEventListener("click", togglePin);
 $("exportBtn").addEventListener("click", exportActiveNote);
+$("exportAllBtn").addEventListener("click", exportAllNotes);
 $("importBtn").addEventListener("click", () => $("importFile").click());
 $("importFile").addEventListener("change", () => {
   const files = [...$("importFile").files];

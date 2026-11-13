@@ -10,5 +10,5 @@ Each item lands as one complete, tested change.
 - [x] Code blocks with syntax coloring in preview
 - [x] Sort options (updated / created / A–Z)
 - [x] Dark/light theme toggle
-- [ ] Export all notes as a single .zip-free bundle (.json)
+- [x] Export all notes as a single .zip-free bundle (.json) — one file with every note (ids, titles, bodies, tags, pins, timestamps) for backup or moving browsers
 - [ ] Trash bin with restore (soft delete)
