@@ -20,6 +20,8 @@
     </select>
   </label>
   <div id="tagFilter" hidden></div>
+  <button id="trashBtn" type="button" title="View deleted notes">🗑️ Trash</button>
+  <button id="emptyTrashBtn" type="button" class="danger" hidden>Empty trash</button>
   <ul id="noteList"></ul>
 </aside>
 <main>
@@ -30,6 +32,7 @@
     <button id="exportAllBtn" title="Download every note as one .json bundle">Export all (.json)</button>
     <button id="importBtn" title="Import .md files as new notes">Import .md</button>
     <input type="file" id="importFile" accept=".md,.markdown,text/markdown" multiple hidden>
+    <button id="restoreBtn" type="button" title="Move this note back to the vault" hidden>↩️ Restore</button>
     <button id="delBtn" class="danger">Delete</button>
   </div>
   <div class="tagbar">
@@ -41,7 +44,7 @@
     <div id="preview" class="preview"></div>
   </div>
   <footer id="counts" class="counts" aria-live="polite"></footer>
-  <p class="hint">Markdown supported: # headings, **bold**, *italic*, `code`, - lists, [links](url), and ```fenced code blocks``` with syntax highlighting. Auto-saves locally. Export downloads the open note as a .md file; Export all downloads every note as one .json bundle; Import adds .md files as new notes.</p>
+  <p class="hint">Markdown supported: # headings, **bold**, *italic*, `code`, - lists, [links](url), and ```fenced code blocks``` with syntax highlighting. Auto-saves locally. Export downloads the open note as a .md file; Export all downloads every note as one .json bundle; Import adds .md files as new notes. Deleted notes go to the Trash — restore them from there, or delete them forever.</p>
 </main>
 <script src="app.js"></script>
 </body>

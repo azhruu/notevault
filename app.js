@@ -9,6 +9,7 @@ const $ = (id) => document.getElementById(id);
 let notes = load();
 let activeId = notes.length ? notes[0].id : null;
 let activeTag = null; // tag filter for the note list, null = show all
+let trashView = false; // viewing the trash bin instead of live notes
 let sortMode = loadSortMode();
 const THEMES = ["dark", "light"];
 let theme = loadTheme();
@@ -72,11 +73,61 @@ function load() {
     n.pinned = n.pinned === true; // notes gained a pin flag; older saves lack it
     /* Notes gained a created stamp; older saves fall back to their update time. */
     n.created = typeof n.created === "number" ? n.created : n.updated;
+    /* Notes gained a trash flag; older saves are all live notes. */
+    n.deleted = n.deleted === true;
+    n.deletedAt = typeof n.deletedAt === "number" ? n.deletedAt : null;
   }
   return parsed;
 }
 function save() { localStorage.setItem(KEY, JSON.stringify(notes)); }
 const active = () => notes.find((n) => n.id === activeId) || null;
+
+/*
+ * Trash bin: soft-deleted notes stay in the vault with `deleted` set,
+ * so they can be restored; only "delete forever" removes them for good.
+ * The trash view lists deleted notes, most recently deleted first.
+ */
+const liveNotes = () => notes.filter((n) => !n.deleted);
+const trashedNotes = () => notes.filter((n) => n.deleted);
+function visibleNotes() { return trashView ? trashedNotes() : liveNotes(); }
+function trashNote(n) {
+  if (!n || n.deleted) return;
+  n.deleted = true;
+  n.deletedAt = Date.now();
+  n.updated = Date.now();
+  save();
+}
+function restoreNote(n) {
+  if (!n || !n.deleted) return;
+  n.deleted = false;
+  n.deletedAt = null;
+  n.updated = Date.now();
+  save();
+}
+function deleteNoteForever(n) {
+  if (!n) return;
+  notes = notes.filter((x) => x.id !== n.id);
+  save();
+}
+function emptyTrash() {
+  const count = trashedNotes().length;
+  if (!count) return;
+  if (!confirm(`Empty the trash? This permanently deletes ${count} note${count === 1 ? "" : "s"}.`)) return;
+  notes = liveNotes();
+  if (trashView) activeId = null;
+  save(); renderAll();
+}
+/* After a delete/restore, point at the first note in the current view. */
+function pickActiveAfterChange() {
+  const list = visibleNotes();
+  activeId = list.length ? list[0].id : null;
+}
+function toggleTrashView() {
+  trashView = !trashView;
+  activeTag = null;
+  pickActiveAfterChange();
+  renderAll();
+}
 
 /* Minimal, safe markdown subset: escape first, then format. */
 function renderMarkdown(src) {
@@ -152,7 +203,7 @@ function codeBlockHtml(code, lang) {
 
 function allTags() {
   const set = new Set();
-  for (const n of notes) for (const t of n.tags) set.add(t);
+  for (const n of visibleNotes()) for (const t of n.tags) set.add(t);
   return [...set].sort();
 }
 
@@ -188,8 +239,10 @@ function renderList() {
   const q = $("search").value.trim().toLowerCase();
   const ul = $("noteList");
   ul.innerHTML = "";
-  /* Pinned notes always sit at the top, then the chosen sort order. */
-  const ordered = sortNotes(notes);
+  /* In the trash, most recently deleted first; live notes use the chosen sort. */
+  const ordered = trashView
+    ? [...visibleNotes()].sort((a, b) => (b.deletedAt || 0) - (a.deletedAt || 0))
+    : sortNotes(visibleNotes());
   for (const n of ordered) {
     if (q && !(n.title + " " + n.body).toLowerCase().includes(q)) continue;
     if (activeTag && !n.tags.includes(activeTag)) continue;
@@ -197,11 +250,14 @@ function renderList() {
     const cls = [];
     if (n.id === activeId) cls.push("active");
     if (n.pinned) cls.push("pinned");
+    if (n.deleted) cls.push("trashed");
     li.className = cls.join(" ");
     const strong = document.createElement("strong");
     strong.textContent = (n.pinned ? "📌 " : "") + (n.title || "Untitled");
     const small = document.createElement("small");
-    small.textContent = new Date(n.updated).toLocaleString();
+    small.textContent = trashView && n.deletedAt
+      ? "Deleted " + new Date(n.deletedAt).toLocaleString()
+      : new Date(n.updated).toLocaleString();
     li.append(strong, small);
     if (n.tags.length) {
       const tagRow = document.createElement("div");
@@ -234,7 +290,7 @@ function renderTags() {
     chip.appendChild(x);
     bar.appendChild(chip);
   }
-  $("tagInput").disabled = !n;
+  $("tagInput").disabled = !n || n.deleted;
   $("tagInput").value = "";
   $("tagInput").placeholder = n ? "Add tag… press Enter" : "";
 }
@@ -264,11 +320,17 @@ function removeTag(t) {
 
 function renderEditor() {
   const n = active();
+  /* A trashed note is read-only: restore it or delete it forever. */
+  const trashed = !!(trashView && n && n.deleted);
   $("noteTitle").value = n ? n.title : "";
   $("editor").value = n ? n.body : "";
   $("preview").innerHTML = renderMarkdown(n ? n.body : "");
-  $("noteTitle").disabled = $("editor").disabled = $("delBtn").disabled = $("exportBtn").disabled = !n;
-  $("pinBtn").disabled = !n;
+  $("noteTitle").disabled = $("editor").disabled = !n || trashed;
+  $("delBtn").disabled = !n;
+  $("delBtn").textContent = trashed ? "Delete forever" : "Delete";
+  $("restoreBtn").hidden = !trashed;
+  $("exportBtn").disabled = !n || trashed;
+  $("pinBtn").disabled = !n || trashed;
   $("pinBtn").textContent = n && n.pinned ? "📌 Pinned" : "📌 Pin";
   $("pinBtn").classList.toggle("on", !!(n && n.pinned));
   renderTags();
@@ -358,12 +420,20 @@ function importMarkdownText(text, filename) {
   } else {
     title = (filename || "").replace(/\.(md|markdown)$/i, "").replace(/[-_]+/g, " ").trim().slice(0, 80);
   }
-  const n = { id: Date.now() + Math.floor(Math.random() * 1000), title, body, tags: [], pinned: false, created: Date.now(), updated: Date.now() };
+  const n = { id: Date.now() + Math.floor(Math.random() * 1000), title, body, tags: [], pinned: false, deleted: false, deletedAt: null, created: Date.now(), updated: Date.now() };
   notes.unshift(n);
   return n;
 }
 
-function renderAll() { renderTagFilter(); renderList(); renderEditor(); }
+function renderAll() { renderTagFilter(); renderList(); renderEditor(); renderTrashButtons(); }
+
+/* Trash button shows how many notes are in the bin and lights up in the trash view. */
+function renderTrashButtons() {
+  const count = trashedNotes().length;
+  $("trashBtn").textContent = "🗑️ Trash" + (count ? " (" + count + ")" : "");
+  $("trashBtn").classList.toggle("on", trashView);
+  $("emptyTrashBtn").hidden = !(trashView && count);
+}
 
 function touch() {
   const n = active();
@@ -379,7 +449,9 @@ function touch() {
 }
 
 $("newBtn").addEventListener("click", () => {
-  const n = { id: Date.now(), title: "", body: "", tags: [], pinned: false, created: Date.now(), updated: Date.now() };
+  /* A new note is live, so leave the trash view to show it. */
+  if (trashView) { trashView = false; activeTag = null; }
+  const n = { id: Date.now(), title: "", body: "", tags: [], pinned: false, deleted: false, deletedAt: null, created: Date.now(), updated: Date.now() };
   notes.unshift(n); activeId = n.id; save(); renderAll();
   $("noteTitle").focus();
 });
@@ -400,6 +472,8 @@ $("importFile").addEventListener("change", () => {
       const n = importMarkdownText(String(reader.result || ""), file.name);
       if (!firstNew) firstNew = n;
       if (--pending === 0) {
+        /* Imported notes are live, so leave the trash view to show them. */
+        if (trashView) { trashView = false; activeTag = null; }
         activeId = firstNew.id;
         save(); renderAll();
       }
@@ -408,12 +482,31 @@ $("importFile").addEventListener("change", () => {
   }
   $("importFile").value = ""; // allow re-importing the same file later
 });
+/*
+ * Delete: a live note goes to the trash (soft delete); a trashed note is
+ * deleted forever, after a confirm. Restore moves a trashed note back.
+ */
 $("delBtn").addEventListener("click", () => {
-  if (!activeId) return;
-  notes = notes.filter((n) => n.id !== activeId);
-  activeId = notes.length ? notes[0].id : null;
+  const n = active();
+  if (!n) return;
+  if (trashView && n.deleted) {
+    if (!confirm(`Permanently delete "${titleOf(n)}"? This cannot be undone.`)) return;
+    deleteNoteForever(n);
+  } else {
+    trashNote(n);
+  }
+  pickActiveAfterChange();
   save(); renderAll();
 });
+$("restoreBtn").addEventListener("click", () => {
+  const n = active();
+  if (!n || !n.deleted) return;
+  restoreNote(n);
+  pickActiveAfterChange();
+  save(); renderAll();
+});
+$("trashBtn").addEventListener("click", toggleTrashView);
+$("emptyTrashBtn").addEventListener("click", emptyTrash);
 $("noteTitle").addEventListener("input", touch);
 $("editor").addEventListener("input", touch);
 $("search").addEventListener("input", renderList);
@@ -433,7 +526,7 @@ $("tagInput").addEventListener("keydown", (e) => {
 });
 
 if (!notes.length) {
-  notes = [{ id: Date.now(), title: "Welcome", tags: ["welcome"], pinned: false, created: Date.now(), updated: Date.now(),
+  notes = [{ id: Date.now(), title: "Welcome", tags: ["welcome"], pinned: false, deleted: false, deletedAt: null, created: Date.now(), updated: Date.now(),
     body: "# Welcome to NoteVault\n\nWrite **markdown** on the left, see it *live* on the right.\n\n- Create notes\n- Search instantly\n- Tag notes and filter by tag\n- Everything stays in your browser" }];
   activeId = notes[0].id; save();
 }

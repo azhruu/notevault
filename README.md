@@ -8,6 +8,7 @@
 
 ## Features
 
+- 🗑️ Trash bin with restore — deleting a note moves it to the trash instead of wiping it; restore it from the Trash view, delete it forever from there, or empty the whole bin (with a confirm); trashed notes show their delete date, most recent first
 - 🌓 Dark/light theme toggle — switch the whole UI (editor, preview, code blocks) between dark and light; your choice is remembered, otherwise it follows your OS setting
 - ✍️ Split editor with **live markdown preview** (headings, bold, italic, inline code, fenced code blocks with syntax highlighting, lists, links)
 - 🔢 Word & character count — live word, character and line count for the open note in the editor footer
@@ -31,7 +32,7 @@ python3 -m http.server 8000   # http://localhost:8000
 
 ## Roadmap
 
-Export all notes as a single .json bundle → trash bin with restore. Full plan: [ROADMAP.md](ROADMAP.md).
+Export all notes as a single .json bundle → trash bin with restore. The roadmap is now complete — full plan: [ROADMAP.md](ROADMAP.md).
 
 ## License
 
