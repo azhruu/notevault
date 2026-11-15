@@ -138,10 +138,18 @@ function renderMarkdown(src) {
     .replace(/`([^`]+)`/g, "<code>$1</code>")
     .replace(/\[([^\]]+)\]\((https?:[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
   let html = "", inList = false, inCode = false, codeLang = "", codeBuf = [];
+  /* Blockquotes: consecutive `> ` lines gather into one <blockquote>. */
+  let inQuote = false, quoteBuf = [];
+  const closeQuote = () => {
+    if (!inQuote) return;
+    html += "<blockquote>" + quoteBuf.map((q) => "<p>" + inline(q) + "</p>").join("") + "</blockquote>";
+    inQuote = false; quoteBuf = [];
+  };
   for (const line of esc.split("\n")) {
     /* Fenced code block: ```lang opens, ``` closes; inside, text stays raw. */
     const fence = /^```(\S*)\s*$/.exec(line);
     if (fence) {
+      closeQuote();
       if (inCode) {
         html += codeBlockHtml(codeBuf.join("\n"), codeLang);
         inCode = false; codeBuf = [];
@@ -152,6 +160,22 @@ function renderMarkdown(src) {
       continue;
     }
     if (inCode) { codeBuf.push(line); continue; }
+    /* A `> ` line joins the open quote; any other line closes it first.
+       (The source is already HTML-escaped, so `>` arrives as `&gt;`.) */
+    const quote = /^&gt;\s?(.*)$/.exec(line);
+    if (quote) {
+      if (inList) { html += "</ul>"; inList = false; }
+      inQuote = true;
+      if (quote[1].trim()) quoteBuf.push(quote[1]);
+      continue;
+    }
+    if (inQuote) closeQuote();
+    /* Horizontal rule: a line of three or more -, * or _ characters. */
+    if (/^(\*\*\*+|---+|___+)\s*$/.test(line)) {
+      if (inList) { html += "</ul>"; inList = false; }
+      html += "<hr>";
+      continue;
+    }
     if (/^\s*-\s+/.test(line)) {
       if (!inList) { html += "<ul>"; inList = true; }
       html += "<li>" + inline(line.replace(/^\s*-\s+/, "")) + "</li>";
@@ -164,6 +188,7 @@ function renderMarkdown(src) {
     else if (line.trim()) html += "<p>" + inline(line) + "</p>";
   }
   if (inList) html += "</ul>";
+  if (inQuote) closeQuote();
   if (inCode) html += codeBlockHtml(codeBuf.join("\n"), codeLang); // unclosed fence still renders as code
   return html || '<p style="color:var(--muted)">Preview appears here…</p>';
 }

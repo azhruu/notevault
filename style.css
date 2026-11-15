@@ -51,6 +51,9 @@ textarea{resize:none;line-height:1.55}
 .preview pre code .tok-com{color:#8b949e;font-style:italic}
 .preview pre code .tok-fn{color:#d2a8ff}
 .preview a{color:var(--accent)}
+.preview blockquote{border-left:3px solid var(--accent);margin:10px 0;padding:2px 14px;color:var(--muted)}
+.preview blockquote p{margin:6px 0}
+.preview hr{border:none;border-top:1px solid var(--border);margin:16px 0}
 .hint{color:var(--muted);font-size:12.5px;margin:0}
 .counts{color:var(--muted);font-size:12.5px}
 @media(max-width:800px){body{flex-direction:column}aside{width:100%}.panes{grid-template-columns:1fr}}

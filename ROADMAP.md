@@ -12,3 +12,4 @@ Each item lands as one complete, tested change.
 - [x] Dark/light theme toggle
 - [x] Export all notes as a single .zip-free bundle (.json) — one file with every note (ids, titles, bodies, tags, pins, timestamps) for backup or moving browsers
 - [x] Trash bin with restore (soft delete)
+- [x] Polish: blockquotes (`> ...`) and horizontal rules (`---`) in the markdown preview — quoted lines gather into one styled blockquote, a `---` line becomes an `<hr>`
