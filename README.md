@@ -16,6 +16,7 @@
 - 📌 Pin notes — pin important notes to the top of the list (📌 button in the toolbar, gold border in the list)
 - 🔎 Instant full-text search across titles and bodies
 - 🏷️ Tags on notes with one-click tag filtering
+- 📋 Copy note — one click copies the open note as markdown to the clipboard (with a fallback for browsers without clipboard access) and briefly confirms "✓ Copied"
 - 📤 Export the open note as a `.md` file, and import `.md` files as new notes (first `#` heading becomes the title)
 - 📦 Export all notes — download the whole vault as one `.json` bundle (every note with its tags, pin and timestamps) for backup or moving browsers
 - 💾 Auto-save to `localStorage` on every keystroke

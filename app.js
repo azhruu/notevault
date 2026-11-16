@@ -355,6 +355,7 @@ function renderEditor() {
   $("delBtn").textContent = trashed ? "Delete forever" : "Delete";
   $("restoreBtn").hidden = !trashed;
   $("exportBtn").disabled = !n || trashed;
+  $("copyBtn").disabled = !n || trashed;
   $("pinBtn").disabled = !n || trashed;
   $("pinBtn").textContent = n && n.pinned ? "📌 Pinned" : "📌 Pin";
   $("pinBtn").classList.toggle("on", !!(n && n.pinned));
@@ -414,6 +415,36 @@ function exportActiveNote() {
   const n = active();
   if (!n) return;
   downloadText(slugify(n.title) + ".md", noteMarkdown(n));
+}
+
+/*
+ * Copy the open note as markdown to the clipboard. Uses the async
+ * clipboard API when available, with a hidden-textarea fallback for
+ * browsers or contexts without clipboard access. The button briefly
+ * confirms the result, then goes back to its normal label.
+ */
+async function copyActiveNote() {
+  const n = active();
+  if (!n) return;
+  const text = noteMarkdown(n);
+  let ok = false;
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(text);
+      ok = true;
+    }
+  } catch { /* fall through to the fallback */ }
+  if (!ok) {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    try { ok = document.execCommand("copy"); } catch { ok = false; }
+    ta.remove();
+  }
+  const btn = $("copyBtn");
+  btn.textContent = ok ? "✓ Copied" : "Copy failed";
+  setTimeout(() => { btn.textContent = "📋 Copy"; }, 1500);
 }
 
 /*
@@ -484,6 +515,7 @@ $("newBtn").addEventListener("click", () => {
 $("themeBtn").addEventListener("click", toggleTheme);
 $("pinBtn").addEventListener("click", togglePin);
 $("exportBtn").addEventListener("click", exportActiveNote);
+$("copyBtn").addEventListener("click", copyActiveNote);
 $("exportAllBtn").addEventListener("click", exportAllNotes);
 $("importBtn").addEventListener("click", () => $("importFile").click());
 $("importFile").addEventListener("change", () => {
