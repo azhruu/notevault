@@ -14,3 +14,4 @@ Each item lands as one complete, tested change.
 - [x] Trash bin with restore (soft delete)
 - [x] Polish: blockquotes (`> ...`) and horizontal rules (`---`) in the markdown preview — quoted lines gather into one styled blockquote, a `---` line becomes an `<hr>`
 - [x] Polish: copy the open note as markdown to the clipboard — one click, with a brief "Copied" confirmation and a fallback for browsers without clipboard access
+- [x] Polish: ordered lists (`1. ...`) in the markdown preview — numbered lines gather into an `<ol>`, mixing freely with bullet lists, quotes and code blocks

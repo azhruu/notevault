@@ -137,7 +137,7 @@ function renderMarkdown(src) {
     .replace(/\*([^*]+)\*/g, "<em>$1</em>")
     .replace(/`([^`]+)`/g, "<code>$1</code>")
     .replace(/\[([^\]]+)\]\((https?:[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
-  let html = "", inList = false, inCode = false, codeLang = "", codeBuf = [];
+  let html = "", inList = false, inOrdered = false, inCode = false, codeLang = "", codeBuf = [];
   /* Blockquotes: consecutive `> ` lines gather into one <blockquote>. */
   let inQuote = false, quoteBuf = [];
   const closeQuote = () => {
@@ -155,6 +155,7 @@ function renderMarkdown(src) {
         inCode = false; codeBuf = [];
       } else {
         if (inList) { html += "</ul>"; inList = false; }
+        if (inOrdered) { html += "</ol>"; inOrdered = false; }
         inCode = true; codeLang = fence[1] || "";
       }
       continue;
@@ -165,6 +166,7 @@ function renderMarkdown(src) {
     const quote = /^&gt;\s?(.*)$/.exec(line);
     if (quote) {
       if (inList) { html += "</ul>"; inList = false; }
+      if (inOrdered) { html += "</ol>"; inOrdered = false; }
       inQuote = true;
       if (quote[1].trim()) quoteBuf.push(quote[1]);
       continue;
@@ -173,21 +175,32 @@ function renderMarkdown(src) {
     /* Horizontal rule: a line of three or more -, * or _ characters. */
     if (/^(\*\*\*+|---+|___+)\s*$/.test(line)) {
       if (inList) { html += "</ul>"; inList = false; }
+      if (inOrdered) { html += "</ol>"; inOrdered = false; }
       html += "<hr>";
       continue;
     }
     if (/^\s*-\s+/.test(line)) {
+      if (inOrdered) { html += "</ol>"; inOrdered = false; }
       if (!inList) { html += "<ul>"; inList = true; }
       html += "<li>" + inline(line.replace(/^\s*-\s+/, "")) + "</li>";
       continue;
     }
+    /* Ordered list: `1. ` lines gather into an <ol> (numbering is the author's). */
+    if (/^\s*\d+\.\s+/.test(line)) {
+      if (inList) { html += "</ul>"; inList = false; }
+      if (!inOrdered) { html += "<ol>"; inOrdered = true; }
+      html += "<li>" + inline(line.replace(/^\s*\d+\.\s+/, "")) + "</li>";
+      continue;
+    }
     if (inList) { html += "</ul>"; inList = false; }
+    if (inOrdered) { html += "</ol>"; inOrdered = false; }
     if (/^###\s/.test(line)) html += "<h3>" + inline(line.slice(4)) + "</h3>";
     else if (/^##\s/.test(line)) html += "<h2>" + inline(line.slice(3)) + "</h2>";
     else if (/^#\s/.test(line)) html += "<h1>" + inline(line.slice(2)) + "</h1>";
     else if (line.trim()) html += "<p>" + inline(line) + "</p>";
   }
   if (inList) html += "</ul>";
+  if (inOrdered) html += "</ol>";
   if (inQuote) closeQuote();
   if (inCode) html += codeBlockHtml(codeBuf.join("\n"), codeLang); // unclosed fence still renders as code
   return html || '<p style="color:var(--muted)">Preview appears here…</p>';
