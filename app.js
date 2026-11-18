@@ -381,12 +381,22 @@ function countWords(text) {
   const t = text.trim();
   return t ? t.split(/\s+/).length : 0;
 }
+/*
+ * Reading time: ~200 words per minute, rounded up, at least 1 minute
+ * for a non-empty note; 0 (no estimate shown) for an empty one.
+ */
+function readingTimeMinutes(text) {
+  const words = countWords(text);
+  return words ? Math.max(1, Math.ceil(words / 200)) : 0;
+}
 function renderCounts() {
   const n = active();
   if (!n) { $("counts").textContent = "No note open"; return; }
   const body = n.body;
   const lines = body ? body.split("\n").length : 0;
-  $("counts").textContent = countWords(body) + " words · " + body.length + " characters · " + lines + " lines";
+  const mins = readingTimeMinutes(body);
+  $("counts").textContent = countWords(body) + " words · " + body.length + " characters · " + lines + " lines"
+    + (mins ? " · ~" + mins + " min read" : "");
 }
 
 function togglePin() {

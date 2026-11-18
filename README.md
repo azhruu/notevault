@@ -11,7 +11,7 @@
 - 🗑️ Trash bin with restore — deleting a note moves it to the trash instead of wiping it; restore it from the Trash view, delete it forever from there, or empty the whole bin (with a confirm); trashed notes show their delete date, most recent first
 - 🌓 Dark/light theme toggle — switch the whole UI (editor, preview, code blocks) between dark and light; your choice is remembered, otherwise it follows your OS setting
 - ✍️ Split editor with **live markdown preview** (headings, bold, italic, inline code, fenced code blocks with syntax highlighting, bullet and numbered lists, links, blockquotes, horizontal rules)
-- 🔢 Word & character count — live word, character and line count for the open note in the editor footer
+- 🔢 Word & character count — live word, character and line count for the open note in the editor footer, plus a "~N min read" estimate (~200 wpm)
 - ↕️ Sort options — order the list by recently updated, recently created, or title A–Z (pinned notes always stay on top); your choice is remembered
 - 📌 Pin notes — pin important notes to the top of the list (📌 button in the toolbar, gold border in the list)
 - 🔎 Instant full-text search across titles and bodies
