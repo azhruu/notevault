@@ -136,6 +136,8 @@ function renderMarkdown(src) {
     .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
     .replace(/\*([^*]+)\*/g, "<em>$1</em>")
     .replace(/`([^`]+)`/g, "<code>$1</code>")
+    /* Images first: `![alt](url)` would otherwise match the link rule below and leave a stray `!`. Only http(s) URLs, like links. */
+    .replace(/!\[([^\]]*)\]\((https?:[^)\s]+)\)/g, '<img src="$2" alt="$1">')
     .replace(/\[([^\]]+)\]\((https?:[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
   let html = "", inList = false, inOrdered = false, inCode = false, codeLang = "", codeBuf = [];
   /* Blockquotes: consecutive `> ` lines gather into one <blockquote>. */

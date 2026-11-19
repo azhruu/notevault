@@ -51,6 +51,7 @@ textarea{resize:none;line-height:1.55}
 .preview pre code .tok-com{color:#8b949e;font-style:italic}
 .preview pre code .tok-fn{color:#d2a8ff}
 .preview a{color:var(--accent)}
+.preview img{max-width:100%;border-radius:6px;display:block;margin:8px 0}
 .preview ol,.preview ul{margin:8px 0;padding-left:22px}
 .preview blockquote{border-left:3px solid var(--accent);margin:10px 0;padding:2px 14px;color:var(--muted)}
 .preview blockquote p{margin:6px 0}
