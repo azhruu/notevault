@@ -184,7 +184,13 @@ function renderMarkdown(src) {
     if (/^\s*-\s+/.test(line)) {
       if (inOrdered) { html += "</ol>"; inOrdered = false; }
       if (!inList) { html += "<ul>"; inList = true; }
-      html += "<li>" + inline(line.replace(/^\s*-\s+/, "")) + "</li>";
+      /* Task list: `- [ ]` / `- [x]` renders as a (read-only) checkbox. */
+      const task = /^\s*-\s+\[([ xX])\]\s+(.*)$/.exec(line);
+      if (task) {
+        html += '<li class="task"><input type="checkbox" disabled' + (task[1].toLowerCase() === "x" ? " checked" : "") + '> ' + inline(task[2]) + "</li>";
+      } else {
+        html += "<li>" + inline(line.replace(/^\s*-\s+/, "")) + "</li>";
+      }
       continue;
     }
     /* Ordered list: `1. ` lines gather into an <ol> (numbering is the author's). */

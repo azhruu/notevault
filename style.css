@@ -53,6 +53,8 @@ textarea{resize:none;line-height:1.55}
 .preview a{color:var(--accent)}
 .preview img{max-width:100%;border-radius:6px;display:block;margin:8px 0}
 .preview ol,.preview ul{margin:8px 0;padding-left:22px}
+.preview li.task{list-style:none;margin-left:-22px}
+.preview li.task input{margin-right:6px;accent-color:var(--accent)}
 .preview blockquote{border-left:3px solid var(--accent);margin:10px 0;padding:2px 14px;color:var(--muted)}
 .preview blockquote p{margin:6px 0}
 .preview hr{border:none;border-top:1px solid var(--border);margin:16px 0}

@@ -17,3 +17,4 @@ Each item lands as one complete, tested change.
 - [x] Polish: ordered lists (`1. ...`) in the markdown preview — numbered lines gather into an `<ol>`, mixing freely with bullet lists, quotes and code blocks
 - [x] Polish: reading-time estimate in the editor footer — "~N min read" at ~200 wpm, shown next to the word count
 - [x] Polish: images (`![alt](url)`) in the markdown preview — http(s) images render as `<img>` (constrained to the preview width), other schemes stay literal text
+- [x] Polish: task lists (`- [ ]` / `- [x]`) in the markdown preview — they render as real read-only checkboxes, mixing freely with plain bullet items
