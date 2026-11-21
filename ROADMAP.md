@@ -18,3 +18,4 @@ Each item lands as one complete, tested change.
 - [x] Polish: reading-time estimate in the editor footer — "~N min read" at ~200 wpm, shown next to the word count
 - [x] Polish: images (`![alt](url)`) in the markdown preview — http(s) images render as `<img>` (constrained to the preview width), other schemes stay literal text
 - [x] Polish: task lists (`- [ ]` / `- [x]`) in the markdown preview — they render as real read-only checkboxes, mixing freely with plain bullet items
+- [x] Polish: click a tag chip on a note in the list to filter by that tag — the same one-click filter as the tag bar, clicking the active tag again clears it

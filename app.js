@@ -309,9 +309,19 @@ function renderList() {
       const tagRow = document.createElement("div");
       tagRow.className = "tags";
       for (const t of n.tags) {
-        const chip = document.createElement("span");
+        /* A tag chip is also a filter: click it to show only notes with
+           that tag — the same one-click filter as the tag bar above the
+           list. Clicking the active tag again clears the filter. */
+        const chip = document.createElement("button");
+        chip.type = "button";
         chip.className = "tag";
         chip.textContent = "#" + t;
+        chip.title = activeTag === t ? "Clear tag filter" : "Show only notes tagged " + t;
+        chip.addEventListener("click", (e) => {
+          e.stopPropagation();
+          activeTag = activeTag === t ? null : t;
+          renderList(); renderTagFilter();
+        });
         tagRow.appendChild(chip);
       }
       li.appendChild(tagRow);
