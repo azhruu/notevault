@@ -17,6 +17,7 @@
 - 🔎 Instant full-text search across titles and bodies
 - 🏷️ Tags on notes with one-click tag filtering — click a tag chip on a note in the list (or in the filter bar) to show only notes with that tag; click again to clear
 - 📋 Copy note — one click copies the open note as markdown to the clipboard (with a fallback for browsers without clipboard access) and briefly confirms "✓ Copied"
+- 📄 Duplicate note — one click copies the open note (same body and tags, titled "… (copy)", unpinned) and opens the copy, so a template or draft can be reused without copy-paste; trashed notes can't be duplicated
 - 📤 Export the open note as a `.md` file, and import `.md` files as new notes (first `#` heading becomes the title)
 - 📦 Export all notes — download the whole vault as one `.json` bundle (every note with its tags, pin and timestamps) for backup or moving browsers
 - 💾 Auto-save to `localStorage` on every keystroke

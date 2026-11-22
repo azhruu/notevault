@@ -387,6 +387,7 @@ function renderEditor() {
   $("restoreBtn").hidden = !trashed;
   $("exportBtn").disabled = !n || trashed;
   $("copyBtn").disabled = !n || trashed;
+  $("duplicateBtn").disabled = !n || trashed;
   $("pinBtn").disabled = !n || trashed;
   $("pinBtn").textContent = n && n.pinned ? "📌 Pinned" : "📌 Pin";
   $("pinBtn").classList.toggle("on", !!(n && n.pinned));
@@ -422,6 +423,33 @@ function togglePin() {
   if (!n) return;
   n.pinned = !n.pinned;
   save(); renderAll();
+}
+
+/*
+ * Duplicate the open note: a fresh copy with the same body and tags,
+ * titled "<title> (copy)", unpinned, with new timestamps. The copy
+ * opens right away so it can be edited — a template or draft can be
+ * reused without copy-paste. Trashed notes can't be duplicated;
+ * restore them first.
+ */
+function duplicateNote() {
+  const n = active();
+  if (!n || n.deleted) return;
+  const copy = {
+    id: Date.now() + Math.floor(Math.random() * 1000),
+    title: ((n.title.trim() || "Untitled") + " (copy)").slice(0, 80),
+    body: n.body,
+    tags: [...n.tags],
+    pinned: false,
+    deleted: false,
+    deletedAt: null,
+    created: Date.now(),
+    updated: Date.now(),
+  };
+  notes.unshift(copy);
+  activeId = copy.id;
+  save(); renderAll();
+  $("noteTitle").focus();
 }
 
 function slugify(text) {
@@ -555,6 +583,7 @@ $("newBtn").addEventListener("click", () => {
 /* Theme toggle: flips dark/light and remembers the choice. */
 $("themeBtn").addEventListener("click", toggleTheme);
 $("pinBtn").addEventListener("click", togglePin);
+$("duplicateBtn").addEventListener("click", duplicateNote);
 $("exportBtn").addEventListener("click", exportActiveNote);
 $("copyBtn").addEventListener("click", copyActiveNote);
 $("exportAllBtn").addEventListener("click", exportAllNotes);
