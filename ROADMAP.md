@@ -20,3 +20,4 @@ Each item lands as one complete, tested change.
 - [x] Polish: task lists (`- [ ]` / `- [x]`) in the markdown preview — they render as real read-only checkboxes, mixing freely with plain bullet items
 - [x] Polish: click a tag chip on a note in the list to filter by that tag — the same one-click filter as the tag bar, clicking the active tag again clears it
 - [x] Polish: duplicate the open note — one click copies its body and tags into a new note titled "… (copy)" and opens it, so a template or draft can be reused without copy-paste
+- [x] Polish: strikethrough (`~~text~~`) in the markdown preview — renders as `<del>`, mixing freely with bold, italic and inline code
