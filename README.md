@@ -15,6 +15,7 @@
 - ↕️ Sort options — order the list by recently updated, recently created, or title A–Z (pinned notes always stay on top); your choice is remembered
 - 📌 Pin notes — pin important notes to the top of the list (📌 button in the toolbar, gold border in the list)
 - 🔎 Instant full-text search across titles and bodies
+- 🪧 Empty-list message — when a search or tag filter matches nothing (or the vault or trash is empty), the list says so instead of going blank
 - 🏷️ Tags on notes with one-click tag filtering — click a tag chip on a note in the list (or in the filter bar) to show only notes with that tag; click again to clear
 - 📋 Copy note — one click copies the open note as markdown to the clipboard (with a fallback for browsers without clipboard access) and briefly confirms "✓ Copied"
 - 📄 Duplicate note — one click copies the open note (same body and tags, titled "… (copy)", unpinned) and opens the copy, so a template or draft can be reused without copy-paste; trashed notes can't be duplicated

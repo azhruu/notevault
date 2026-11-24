@@ -21,3 +21,4 @@ Each item lands as one complete, tested change.
 - [x] Polish: click a tag chip on a note in the list to filter by that tag — the same one-click filter as the tag bar, clicking the active tag again clears it
 - [x] Polish: duplicate the open note — one click copies its body and tags into a new note titled "… (copy)" and opens it, so a template or draft can be reused without copy-paste
 - [x] Polish: strikethrough (`~~text~~`) in the markdown preview — renders as `<del>`, mixing freely with bold, italic and inline code
+- [x] Polish: empty note list shows a message — "No notes match — clear the search or tag filter" when a search or tag filter matches nothing, "Trash is empty" in an empty bin, "No notes yet — click + New note" in an empty vault — instead of a blank sidebar

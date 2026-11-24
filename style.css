@@ -20,6 +20,7 @@ ul#noteList{list-style:none;margin:6px 0 0;padding:0;overflow-y:auto}
 .sortrow{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13px}
 .sortrow select{flex:1;min-width:0}
 ul#noteList li{padding:9px 10px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;cursor:pointer}
+ul#noteList li.no-match{border:none;text-align:center;color:var(--muted);font-size:13px;cursor:default}
 ul#noteList li.active{border-color:var(--accent)}
 ul#noteList li.pinned{border-color:#d29922}
 ul#noteList li small{color:var(--muted);display:block;margin-top:2px}

@@ -291,9 +291,11 @@ function renderList() {
   const ordered = trashView
     ? [...visibleNotes()].sort((a, b) => (b.deletedAt || 0) - (a.deletedAt || 0))
     : sortNotes(visibleNotes());
+  let shown = 0;
   for (const n of ordered) {
     if (q && !(n.title + " " + n.body).toLowerCase().includes(q)) continue;
     if (activeTag && !n.tags.includes(activeTag)) continue;
+    shown++;
     const li = document.createElement("li");
     const cls = [];
     if (n.id === activeId) cls.push("active");
@@ -329,6 +331,20 @@ function renderList() {
       li.appendChild(tagRow);
     }
     li.addEventListener("click", () => { activeId = n.id; renderAll(); });
+    ul.appendChild(li);
+  }
+  /*
+   * A list with nothing to show says so — a blank sidebar looks broken
+   * and hides whether the vault is empty or the filter matched nothing.
+   */
+  if (!shown) {
+    const li = document.createElement("li");
+    li.className = "no-match";
+    li.textContent = trashView
+      ? "Trash is empty"
+      : (q || activeTag)
+        ? "No notes match — clear the search or tag filter"
+        : "No notes yet — click + New note";
     ul.appendChild(li);
   }
 }
