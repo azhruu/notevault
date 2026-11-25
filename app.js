@@ -283,6 +283,26 @@ function renderTagFilter() {
   }
 }
 
+/*
+ * Relative timestamps: "just now", "5 min ago", "3 hours ago",
+ * "2 days ago", "3 weeks ago" — a list date reads at a glance, and
+ * anything older than a few weeks falls back to the plain date.
+ * The full date stays on hover (title attribute) where it is used.
+ */
+function relativeTime(ts, now) {
+  if (typeof ts !== "number" || !ts) return "";
+  const mins = Math.max(0, Math.floor((now - ts) / 60000));
+  if (mins < 1) return "just now";
+  if (mins < 60) return mins + (mins === 1 ? " min ago" : " mins ago");
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return hrs + (hrs === 1 ? " hour ago" : " hours ago");
+  const days = Math.floor(hrs / 24);
+  if (days < 7) return days + (days === 1 ? " day ago" : " days ago");
+  const weeks = Math.floor(days / 7);
+  if (weeks < 5) return weeks + (weeks === 1 ? " week ago" : " weeks ago");
+  return new Date(ts).toLocaleDateString();
+}
+
 function renderList() {
   const q = $("search").value.trim().toLowerCase();
   const ul = $("noteList");
@@ -305,9 +325,16 @@ function renderList() {
     const strong = document.createElement("strong");
     strong.textContent = (n.pinned ? "📌 " : "") + (n.title || "Untitled");
     const small = document.createElement("small");
-    small.textContent = trashView && n.deletedAt
-      ? "Deleted " + new Date(n.deletedAt).toLocaleString()
-      : new Date(n.updated).toLocaleString();
+    /* Relative time at a glance ("Edited 3 hours ago"); the exact date
+       is one hover away. Trashed notes show when they were deleted. */
+    const now = Date.now();
+    if (trashView && n.deletedAt) {
+      small.textContent = "Deleted " + relativeTime(n.deletedAt, now);
+      small.title = "Deleted " + new Date(n.deletedAt).toLocaleString();
+    } else {
+      small.textContent = "Edited " + relativeTime(n.updated, now);
+      small.title = "Edited " + new Date(n.updated).toLocaleString();
+    }
     li.append(strong, small);
     if (n.tags.length) {
       const tagRow = document.createElement("div");
