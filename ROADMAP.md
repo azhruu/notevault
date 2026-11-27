@@ -23,3 +23,4 @@ Each item lands as one complete, tested change.
 - [x] Polish: strikethrough (`~~text~~`) in the markdown preview — renders as `<del>`, mixing freely with bold, italic and inline code
 - [x] Polish: empty note list shows a message — "No notes match — clear the search or tag filter" when a search or tag filter matches nothing, "Trash is empty" in an empty bin, "No notes yet — click + New note" in an empty vault — instead of a blank sidebar
 - [x] Polish: relative timestamps in the note list — "Edited 3 hours ago" / "Deleted 2 days ago" at a glance instead of a full date string, with the exact date on hover; anything older than a few weeks falls back to the plain date
+- [x] Polish: tables (`| col |`) in the markdown preview — a header row plus a `| --- |` separator renders as a real `<table>`, with `:---:` / `---:` alignment, and inline formatting works inside cells

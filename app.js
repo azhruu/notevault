@@ -130,6 +130,29 @@ function toggleTrashView() {
 }
 
 /* Minimal, safe markdown subset: escape first, then format. */
+
+/*
+ * Tables: a header row of pipe-separated cells followed by a separator
+ * row (`| --- | :---: | ---: |`) starts a table; the pipe rows after it
+ * are body rows until a line that is not a matching pipe row. Alignment
+ * comes from the separator colons: `:---` left, `:---:` centre, `---:`
+ * right, plain `---` default. A header whose next line is not a valid
+ * separator of the same width is just a paragraph — so a stray `|` in
+ * prose never becomes a table.
+ */
+function parseTableRow(line) {
+  const t = line.trim();
+  if (!t.includes("|")) return null;
+  if (/^#{1,6}\s/.test(t)) return null; // headings are headings, even with a `|`
+  const cells = t.replace(/^\|/, "").replace(/\|$/, "").split("|").map((c) => c.trim());
+  return cells.length ? cells : null;
+}
+function parseTableSep(line) {
+  const cells = parseTableRow(line);
+  if (!cells) return null;
+  return cells.every((c) => /^:?-+:?$/.test(c)) ? cells : null;
+}
+
 function renderMarkdown(src) {
   const esc = src.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   const inline = (s) => s
@@ -149,7 +172,11 @@ function renderMarkdown(src) {
     html += "<blockquote>" + quoteBuf.map((q) => "<p>" + inline(q) + "</p>").join("") + "</blockquote>";
     inQuote = false; quoteBuf = [];
   };
-  for (const line of esc.split("\n")) {
+  const lines = esc.split("\n");
+  /* Indexed loop: a table header needs to peek at the next line (the
+     separator row) and consume the body rows that follow it. */
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
     /* Fenced code block: ```lang opens, ``` closes; inside, text stays raw. */
     const fence = /^```(\S*)\s*$/.exec(line);
     if (fence) {
@@ -200,6 +227,29 @@ function renderMarkdown(src) {
       if (inList) { html += "</ul>"; inList = false; }
       if (!inOrdered) { html += "<ol>"; inOrdered = true; }
       html += "<li>" + inline(line.replace(/^\s*\d+\.\s+/, "")) + "</li>";
+      continue;
+    }
+    /* Table: a header row plus a separator row of the same width opens a
+       <table>; the pipe rows after it are body rows. Cells run through
+       inline() like any other text, so **bold** and `code` work in cells. */
+    const header = parseTableRow(line);
+    const sep = header && i + 1 < lines.length ? parseTableSep(lines[i + 1]) : null;
+    if (header && sep && sep.length === header.length) {
+      if (inList) { html += "</ul>"; inList = false; }
+      if (inOrdered) { html += "</ol>"; inOrdered = false; }
+      const aligns = sep.map((s) => (s.startsWith(":") && s.endsWith(":") ? "center" : s.endsWith(":") ? "right" : s.startsWith(":") ? "left" : ""));
+      const alignAttr = (a) => a ? ' style="text-align:' + a + '"' : "";
+      const rowHtml = (tag, cells) => "<tr>" + cells.map((c, j) => "<" + tag + alignAttr(aligns[j]) + ">" + inline(c) + "</" + tag + ">").join("") + "</tr>";
+      let table = "<table><thead>" + rowHtml("th", header) + "</thead><tbody>";
+      i++; // consume the separator row
+      while (i + 1 < lines.length) {
+        const row = parseTableRow(lines[i + 1]);
+        if (!row || row.length !== header.length) break;
+        table += rowHtml("td", row);
+        i++;
+      }
+      table += "</tbody></table>";
+      html += table;
       continue;
     }
     if (inList) { html += "</ul>"; inList = false; }

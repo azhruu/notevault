@@ -11,7 +11,7 @@
 - 🗑️ Trash bin with restore — deleting a note moves it to the trash instead of wiping it; restore it from the Trash view, delete it forever from there, or empty the whole bin (with a confirm); trashed notes show how long ago they were deleted, most recent first
 - 🕐 Relative timestamps in the note list — "Edited 3 hours ago" instead of a full date string (hover for the exact date); trashed notes show "Deleted … ago" the same way
 - 🌓 Dark/light theme toggle — switch the whole UI (editor, preview, code blocks) between dark and light; your choice is remembered, otherwise it follows your OS setting
-- ✍️ Split editor with **live markdown preview** (headings, bold, italic, strikethrough, inline code, fenced code blocks with syntax highlighting, bullet and numbered lists, task-list checkboxes, links, images, blockquotes, horizontal rules)
+- ✍️ Split editor with **live markdown preview** (headings, bold, italic, strikethrough, inline code, fenced code blocks with syntax highlighting, bullet and numbered lists, task-list checkboxes, links, images, blockquotes, horizontal rules, tables with column alignment)
 - 🔢 Word & character count — live word, character and line count for the open note in the editor footer, plus a "~N min read" estimate (~200 wpm)
 - ↕️ Sort options — order the list by recently updated, recently created, or title A–Z (pinned notes always stay on top); your choice is remembered
 - 📌 Pin notes — pin important notes to the top of the list (📌 button in the toolbar, gold border in the list)
@@ -36,7 +36,7 @@ python3 -m http.server 8000   # http://localhost:8000
 
 ## Roadmap
 
-Export all notes as a single .json bundle → trash bin with restore. The roadmap is now complete — full plan: [ROADMAP.md](ROADMAP.md).
+Export all notes as a single .json bundle → trash bin with restore → markdown tables in the preview. The roadmap is now complete — full plan: [ROADMAP.md](ROADMAP.md).
 
 ## License
 
