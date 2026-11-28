@@ -353,6 +353,21 @@ function relativeTime(ts, now) {
   return new Date(ts).toLocaleDateString();
 }
 
+/*
+ * List snippet: the first non-empty line of the body, with its markdown
+ * markers stripped, cut to 60 characters — so the list shows what a note
+ * is about, not just its title. An empty body has no snippet.
+ */
+function noteSnippet(body) {
+  const line = (body || "").split("\n").map((l) => l.trim()).find((l) => l);
+  if (!line) return "";
+  const plain = line
+    .replace(/^#{1,6}\s+/, "").replace(/^>\s?/, "")
+    .replace(/^[-*]\s+/, "").replace(/^\d+\.\s+/, "")
+    .replace(/[*_`~]/g, "");
+  return plain.length > 60 ? plain.slice(0, 60).trimEnd() + "…" : plain;
+}
+
 function renderList() {
   const q = $("search").value.trim().toLowerCase();
   const ul = $("noteList");
@@ -374,6 +389,7 @@ function renderList() {
     li.className = cls.join(" ");
     const strong = document.createElement("strong");
     strong.textContent = (n.pinned ? "📌 " : "") + (n.title || "Untitled");
+    const snippet = noteSnippet(n.body);
     const small = document.createElement("small");
     /* Relative time at a glance ("Edited 3 hours ago"); the exact date
        is one hover away. Trashed notes show when they were deleted. */
@@ -385,7 +401,15 @@ function renderList() {
       small.textContent = "Edited " + relativeTime(n.updated, now);
       small.title = "Edited " + new Date(n.updated).toLocaleString();
     }
-    li.append(strong, small);
+    li.append(strong);
+    /* A one-line preview of the body under the title, when there is one. */
+    if (snippet) {
+      const prev = document.createElement("span");
+      prev.className = "snippet";
+      prev.textContent = snippet;
+      li.appendChild(prev);
+    }
+    li.appendChild(small);
     if (n.tags.length) {
       const tagRow = document.createElement("div");
       tagRow.className = "tags";

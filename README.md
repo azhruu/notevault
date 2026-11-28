@@ -10,6 +10,7 @@
 
 - 🗑️ Trash bin with restore — deleting a note moves it to the trash instead of wiping it; restore it from the Trash view, delete it forever from there, or empty the whole bin (with a confirm); trashed notes show how long ago they were deleted, most recent first
 - 🕐 Relative timestamps in the note list — "Edited 3 hours ago" instead of a full date string (hover for the exact date); trashed notes show "Deleted … ago" the same way
+- 📝 List preview — each note shows a one-line snippet of its body under the title (first line, markdown markers stripped, cut at 60 characters), so notes can be told apart without opening them
 - 🌓 Dark/light theme toggle — switch the whole UI (editor, preview, code blocks) between dark and light; your choice is remembered, otherwise it follows your OS setting
 - ✍️ Split editor with **live markdown preview** (headings, bold, italic, strikethrough, inline code, fenced code blocks with syntax highlighting, bullet and numbered lists, task-list checkboxes, links, images, blockquotes, horizontal rules, tables with column alignment)
 - 🔢 Word & character count — live word, character and line count for the open note in the editor footer, plus a "~N min read" estimate (~200 wpm)
